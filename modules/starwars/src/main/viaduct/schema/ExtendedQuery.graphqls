@@ -1,0 +1,62 @@
+"""
+Search input demonstrating @oneOf directive for exactly-one-field semantics
+"""
+input CharacterSearchInput @oneOf @scope(to: ["default"]) {
+  """
+  Search by character name
+  """
+  byName: String
+  """
+  Search by character ID
+  """
+  byId: ID @idOf(type: "Character")
+  """
+  Search by birth year
+  """
+  byBirthYear: String
+}
+
+extend type Query @scope(to: ["default"]) {
+  """
+  Search for a character using exactly one search criteria
+  """
+  searchCharacter(
+    """
+    Search input - exactly one field must be provided
+    """
+    search: CharacterSearchInput!
+  ): Character @resolver
+
+  """
+  All films
+  """
+  allFilms(limit: Int): [Film] @resolver @backingData(class: "viaduct.demoapp.starwars.resolvers.AllFilmsResolver")
+
+  """
+  All characters
+  """
+  allCharacters(limit: Int): [Character]
+    @resolver
+    @backingData(class: "viaduct.demoapp.starwars.resolvers.AllCharactersResolver")
+
+  """
+  All planets
+  """
+  allPlanets(limit: Int): [Planet]
+    @resolver
+    @backingData(class: "viaduct.demoapp.starwars.resolvers.AllPlanetsResolver")
+
+  """
+  All species
+  """
+  allSpecies(limit: Int): [Species]
+    @resolver
+    @backingData(class: "viaduct.demoapp.starwars.resolvers.AllSpeciesResolver")
+
+  """
+  All vehicles
+  """
+  allVehicles(limit: Int): [Vehicle]
+    @resolver
+    @backingData(class: "viaduct.demoapp.starwars.resolvers.AllVehiclesResolver")
+}
