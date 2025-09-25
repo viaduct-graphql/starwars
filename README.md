@@ -25,7 +25,7 @@ The server will start on `http://localhost:8080`.
 
 ### 2. Access GraphiQL
 
-Open your browser and go to [http://localhost:8080/graphiql](http://localhost:8080/graphiql)
+Open your browser and go to [http://localhost:8080/graphiql](http://localhost:8080/graphiql).
 
 ### 3. Try Example Queries
 
@@ -44,7 +44,7 @@ query {
 
 To perform a query that needs some scope field like culturalNotes on Species, that needs the "extras" scope, include the `X-Viaduct-Scope` header in your request:
 
-```
+```graphql
 query {
  node(id: "U3BlY2llczox") {
   ... on Species {
