@@ -12,15 +12,17 @@ import viaduct.demoapp.starwars.resolvers.AllStarshipsResolver
 import viaduct.demoapp.starwars.resolvers.StarshipNodeResolver
 import viaduct.engine.api.ViaductSchema
 import viaduct.engine.runtime.execution.DefaultCoroutineInterop
-import viaduct.service.runtime.ViaductSchemaRegistryBuilder
+import viaduct.service.runtime.SchemaRegistryConfiguration
+import viaduct.service.runtime.ViaductSchemaRegistry
 import viaduct.tenant.testing.DefaultAbstractResolverTestBase
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StarshipResolversUnitTests : DefaultAbstractResolverTestBase() {
     override fun getSchema(): ViaductSchema =
-        ViaductSchemaRegistryBuilder()
-            .withFullSchemaFromResources("viaduct.demoapp.starwars", ".*\\.graphqls")
-            .build(DefaultCoroutineInterop)
+        ViaductSchemaRegistry.Factory(DefaultCoroutineInterop)
+            .createRegistry(
+                SchemaRegistryConfiguration.fromResources("viaduct.demoapp.starwars", ".*\\.graphqls")
+            )
             .getFullSchema()
 
     private fun queryObj() = viaduct.api.grts.Query.Builder(context).build()

@@ -17,15 +17,17 @@ import viaduct.demoapp.starwars.resolvers.SpeciesSpecialAbilitiesResolver
 import viaduct.demoapp.starwars.resolvers.SpeciesTechnologicalLevelResolver
 import viaduct.engine.api.ViaductSchema
 import viaduct.engine.runtime.execution.DefaultCoroutineInterop
-import viaduct.service.runtime.ViaductSchemaRegistryBuilder
+import viaduct.service.runtime.SchemaRegistryConfiguration
+import viaduct.service.runtime.ViaductSchemaRegistry
 import viaduct.tenant.testing.DefaultAbstractResolverTestBase
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SpeciesExtrasResolverUnitTests : DefaultAbstractResolverTestBase() {
     override fun getSchema(): ViaductSchema =
-        ViaductSchemaRegistryBuilder()
-            .withFullSchemaFromResources("viaduct.demoapp.starwars", ".*\\.graphqls")
-            .build(DefaultCoroutineInterop)
+        ViaductSchemaRegistry.Factory(DefaultCoroutineInterop)
+            .createRegistry(
+                SchemaRegistryConfiguration.fromResources("viaduct.demoapp.starwars", ".*\\.graphqls")
+            )
             .getFullSchema()
 
     /**
