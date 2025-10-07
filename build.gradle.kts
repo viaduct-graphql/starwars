@@ -7,6 +7,12 @@ plugins {
     jacoco
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
 viaductApplication {
     grtPackageName.set("viaduct.api.grts")
     modulePackagePrefix.set("viaduct.demoapp")
