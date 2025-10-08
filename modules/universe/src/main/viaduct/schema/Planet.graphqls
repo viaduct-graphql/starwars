@@ -1,0 +1,87 @@
+"""
+Planet schema definitions
+"""
+type Planet implements Node @scope(to: ["default"]) @resolver {
+  """
+  The ID of an object
+  """
+  id: ID!
+
+  """
+  The name of this planet.
+  """
+  name: String
+
+  """
+  The diameter of this planet in kilometers.
+  """
+  diameter: Int
+
+  """
+  The number of standard hours it takes for this planet to complete a single
+  rotation on its axis.
+  """
+  rotationPeriod: Int
+
+  """
+  The number of standard days it takes for this planet to complete a single orbit
+  of its local star.
+  """
+  orbitalPeriod: Int
+
+  """
+  A number denoting the gravity of this planet, where "1" is normal or 1 standard
+  G. "2" is twice or 2 standard Gs. "0.5" is half or 0.5 standard Gs.
+  """
+  gravity: Float
+
+  """
+  The average population of sentient beings inhabiting this planet.
+  """
+  population: Float
+
+  """
+  The percentage of the planet surface that is naturally occurring water or bodies
+  of water.
+  """
+  surfaceWater: Float
+
+  """
+  The ISO 8601 date format of the time that this resource was created.
+  """
+  created: String
+
+  """
+  The ISO 8601 date format of the time that this resource was edited.
+  """
+  edited: String
+
+  """
+  The residents of this planet.
+  """
+  terrains: [String]
+
+  """
+  The films that this planet has appeared in.
+  """
+  climates: [String]
+
+  """
+  The residents of this planet.
+  """
+  residents(limit: Int): [Character!] @resolver
+
+  """
+  The films that this planet has appeared in.
+  """
+  films(limit: Int): [Film!] @resolver
+}
+
+extend type Query @scope(to: ["default"]) {
+  """
+  All planets
+  """
+  allPlanets(limit: Int): [Planet]
+    @resolver
+    @backingData(class: "viaduct.demoapp.universe.planets.viaduct.resolvers.AllPlanetsResolver")
+}

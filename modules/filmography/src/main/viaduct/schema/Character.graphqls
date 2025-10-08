@@ -1,0 +1,198 @@
+"""
+An individual person or character within the Star Wars universe.
+"""
+type Character implements Node @scope(to: ["default"]) @resolver {
+  """
+  The GlobalID of this character - uniquely identifies this Character in the graph (internal use only)
+  """
+  id: ID!
+
+  """
+  The name of this character.
+  """
+  name: String
+
+  """
+  The birth year of the character, using the in-universe standard of BBY or ABY -
+  Before the Battle of Yavin or After the Battle of Yavin. The Battle of Yavin is
+  a battle that occurs at the end of Star Wars episode IV: A New Hope.
+  """
+  birthYear: String
+
+  """
+  The eye color of this character. Will be "unknown" if not known or "n/a" if the
+  character does not have an eye.
+  """
+  eyeColor: String
+
+  """
+  The gender of this character. Either "Male", "Female" or "unknown",
+  "n/a" if the character does not have a gender.
+  """
+  gender: String
+
+  """
+  The hair color of this character. Will be "unknown" if not known or "n/a" if the
+  character does not have hair.
+  """
+  hairColor: String
+
+  """
+  The height of the character in centimeters.
+  """
+  height: Int
+
+  """
+  The mass of the character in kilograms.
+  """
+  mass: Float
+
+  """
+  The ISO 8601 date format of the time that this resource was created.
+  """
+  created: String
+
+  """
+  The ISO 8601 date format of the time that this resource was edited.
+  """
+  edited: String
+
+  """
+  A planet that this character was born on or inhabits.
+  """
+  homeworld: Planet @resolver
+
+  """
+  The species that this character belongs to, or null if unknown.
+  """
+  species: Species @resolver
+
+  """
+  Display name for the character (demonstrates shorthand fragment syntax)
+  """
+  displayName: String @resolver
+
+  """
+  Summary of character with name and birth year (demonstrates full fragment syntax)
+  """
+  displaySummary: String @resolver
+
+  """
+  Description of character's appearance (demonstrates full fragment syntax with multiple fields)
+  """
+  appearanceDescription: String @resolver
+
+  """
+  Number of films this character appears in (batch resolver example)
+  """
+  filmCount: Int @resolver
+
+  """
+  Rich summary combining character data with relationships (batch resolver example)
+  """
+  richSummary: String @resolver
+
+  """
+  Character profile with conditional information based on includeDetails argument (demonstrates @Variable with fromArgument)
+  """
+  characterProfile(includeDetails: Boolean! = false): String @resolver
+
+  """
+  Character stats summary with age range filtering (demonstrates VariableProvider with dynamic values)
+  """
+  characterStats(minAge: Int, maxAge: Int): String @resolver
+
+  """
+  Formatted character description using field variables (demonstrates @Variable with fromField)
+  """
+  formattedDescription(format: String = "default"): String @resolver
+}
+
+extend type Query @scope(to: ["default"]) {
+  """
+  Search for a character using exactly one search criteria
+  """
+  searchCharacter(
+    """
+    Search input - exactly one field must be provided
+    """
+    search: CharacterSearchInput!
+  ): Character @resolver
+
+  """
+  All characters
+  """
+  allCharacters(limit: Int): [Character]
+    @resolver
+    @backingData(class: "viaduct.demoapp.characters.viaduct.queryresolvers.AllCharactersResolver")
+}
+
+input CharacterSearchInput @oneOf @scope(to: ["default"]) {
+  """
+  Search by character name
+  """
+  byName: String
+  """
+  Search by character ID
+  """
+  byId: ID @idOf(type: "Character")
+  """
+  Search by birth year
+  """
+  byBirthYear: String
+}
+
+extend type Mutation @scope(to: ["default"]) {
+  """
+  Create a new Character.
+  """
+  createCharacter(input: CreateCharacterInput!): Character @resolver
+
+  """
+  Update an existing Character's name.
+  """
+  updateCharacterName(id: ID! @idOf(type: "Character"), name: String!): Character @resolver
+
+  """
+  Link a Character to a Film (adds the character to that film's cast).
+  Allows locating the character either directly by ID or via the existing search input.
+  """
+  addCharacterToFilm(input: AddCharacterToFilmInput!): AddCharacterToFilmPayload @resolver
+
+  """
+  Delete a Character by ID. Returns true if a record was removed.
+  """
+  deleteCharacter(id: ID! @idOf(type: "Character")): Boolean @resolver
+}
+
+"""
+Input for creating a new Character.
+All fields except name are optional; omit unknown values.
+"""
+input CreateCharacterInput @scope(to: ["default"]) {
+  name: String!
+  birthYear: String
+  eyeColor: String
+  gender: String
+  hairColor: String
+  height: Int
+  mass: Float
+  homeworldId: ID @idOf(type: "Planet")
+  speciesId: ID @idOf(type: "Species")
+}
+
+"""
+Input for adding an existing Character to an existing Film.
+"""
+input AddCharacterToFilmInput @scope(to: ["default"]) {
+  filmId: ID! @idOf(type: "Film")
+  characterId: ID @idOf(type: "Character")
+}
+
+"""
+Payload returned when adding a Character to a Film.
+"""
+type AddCharacterToFilmPayload @scope(to: ["default"]) {
+  character: Character
+  film: Film
+}

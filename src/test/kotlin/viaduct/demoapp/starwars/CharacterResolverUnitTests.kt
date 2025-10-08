@@ -10,12 +10,12 @@ import viaduct.api.grts.Character
 import viaduct.api.grts.Character_CharacterStats_Arguments
 import viaduct.api.grts.Character_FormattedDescription_Arguments
 import viaduct.api.grts.Species
-import viaduct.demoapp.starwars.resolvers.CharacterAppearanceDescriptionResolver
-import viaduct.demoapp.starwars.resolvers.CharacterDisplayNameResolver
-import viaduct.demoapp.starwars.resolvers.CharacterDisplaySummaryResolver
-import viaduct.demoapp.starwars.resolvers.CharacterFormattedDescriptionResolver
-import viaduct.demoapp.starwars.resolvers.CharacterProfileResolver
-import viaduct.demoapp.starwars.resolvers.CharacterStatsResolver
+import viaduct.demoapp.characters.viaduct.fieldresolvers.AppearanceDescriptionResolver
+import viaduct.demoapp.characters.viaduct.fieldresolvers.DisplayNameResolver
+import viaduct.demoapp.characters.viaduct.fieldresolvers.DisplaySummaryResolver
+import viaduct.demoapp.characters.viaduct.fieldresolvers.FormattedDescriptionResolver
+import viaduct.demoapp.characters.viaduct.fieldresolvers.ProfileResolver
+import viaduct.demoapp.characters.viaduct.fieldresolvers.StatsResolver
 import viaduct.engine.api.ViaductSchema
 import viaduct.engine.runtime.execution.DefaultCoroutineInterop
 import viaduct.service.runtime.SchemaRegistryConfiguration
@@ -34,7 +34,7 @@ class CharacterResolverUnitTests : DefaultAbstractResolverTestBase() {
     @Test
     fun `DisplayNameResolver returns name correctly`(): Unit =
         runBlocking {
-            val resolver = CharacterDisplayNameResolver()
+            val resolver = DisplayNameResolver()
 
             val result = runFieldResolver(
                 resolver = resolver,
@@ -47,7 +47,7 @@ class CharacterResolverUnitTests : DefaultAbstractResolverTestBase() {
     @Test
     fun `DisplaySummaryResolver returns formatted name and birth year`(): Unit =
         runBlocking {
-            val resolver = CharacterDisplaySummaryResolver()
+            val resolver = DisplaySummaryResolver()
 
             val result = runFieldResolver(
                 resolver = resolver,
@@ -60,7 +60,7 @@ class CharacterResolverUnitTests : DefaultAbstractResolverTestBase() {
     @Test
     fun `AppearanceDescriptionResolver returns appearance string`(): Unit =
         runBlocking {
-            val resolver = CharacterAppearanceDescriptionResolver()
+            val resolver = AppearanceDescriptionResolver()
 
             val result = runFieldResolver(
                 resolver = resolver,
@@ -73,7 +73,7 @@ class CharacterResolverUnitTests : DefaultAbstractResolverTestBase() {
     @Test
     fun `CharacterProfileResolver returns basic profile when details not included`(): Unit =
         runBlocking {
-            val resolver = CharacterProfileResolver()
+            val resolver = ProfileResolver()
 
             val result = runFieldResolver(
                 resolver = resolver,
@@ -86,7 +86,7 @@ class CharacterResolverUnitTests : DefaultAbstractResolverTestBase() {
     @Test
     fun `CharacterProfileResolver returns full profile when details are available`(): Unit =
         runBlocking {
-            val resolver = CharacterProfileResolver()
+            val resolver = ProfileResolver()
 
             val result = runFieldResolver(
                 resolver = resolver,
@@ -104,7 +104,7 @@ class CharacterResolverUnitTests : DefaultAbstractResolverTestBase() {
     @Test
     fun `CharacterStatsResolver returns full stats when in valid age range`(): Unit =
         runBlocking {
-            val resolver = CharacterStatsResolver()
+            val resolver = StatsResolver()
 
             val result = runFieldResolver(
                 resolver = resolver,
@@ -123,7 +123,7 @@ class CharacterResolverUnitTests : DefaultAbstractResolverTestBase() {
     @Test
     fun `CharacterStatsResolver still shows minimal info for invalid age range`(): Unit =
         runBlocking {
-            val resolver = CharacterStatsResolver()
+            val resolver = StatsResolver()
 
             val result = runFieldResolver(
                 resolver = resolver,
@@ -142,7 +142,7 @@ class CharacterResolverUnitTests : DefaultAbstractResolverTestBase() {
     @Test
     fun `FormattedDescriptionResolver returns full description for detailed format`(): Unit =
         runBlocking {
-            val resolver = CharacterFormattedDescriptionResolver()
+            val resolver = FormattedDescriptionResolver()
 
             val result = runFieldResolver(
                 resolver = resolver,
@@ -161,7 +161,7 @@ class CharacterResolverUnitTests : DefaultAbstractResolverTestBase() {
     @Test
     fun `FormattedDescriptionResolver returns year only`(): Unit =
         runBlocking {
-            val resolver = CharacterFormattedDescriptionResolver()
+            val resolver = FormattedDescriptionResolver()
 
             val result = runFieldResolver(
                 resolver = resolver,
@@ -178,7 +178,7 @@ class CharacterResolverUnitTests : DefaultAbstractResolverTestBase() {
     @Test
     fun `FormattedDescriptionResolver returns appearance only`(): Unit =
         runBlocking {
-            val resolver = CharacterFormattedDescriptionResolver()
+            val resolver = FormattedDescriptionResolver()
 
             val result = runFieldResolver(
                 resolver = resolver,
@@ -196,7 +196,7 @@ class CharacterResolverUnitTests : DefaultAbstractResolverTestBase() {
     @Test
     fun `FormattedDescriptionResolver returns name by default`(): Unit =
         runBlocking {
-            val resolver = CharacterFormattedDescriptionResolver()
+            val resolver = FormattedDescriptionResolver()
 
             val result = runFieldResolver(
                 resolver = resolver,
@@ -212,7 +212,7 @@ class CharacterResolverUnitTests : DefaultAbstractResolverTestBase() {
     @Test
     fun `CharacterProfileResolver returns basic profile when includeDetails=false`(): Unit =
         runBlocking {
-            val resolver = CharacterProfileResolver()
+            val resolver = ProfileResolver()
 
             val result = runFieldResolver(
                 resolver = resolver,
@@ -236,7 +236,7 @@ class CharacterResolverUnitTests : DefaultAbstractResolverTestBase() {
     @Test
     fun `CharacterProfileResolver returns full profile when includeDetails=true`(): Unit =
         runBlocking {
-            val resolver = CharacterProfileResolver()
+            val resolver = ProfileResolver()
 
             val result = runFieldResolver(
                 resolver = resolver,

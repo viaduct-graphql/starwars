@@ -1,14 +1,14 @@
-# Star Wars GraphQL Demo - Deep Dive
+# Star Wars GraphQL Demo – Deep Dive
 
-> For quick start instructions, see [README.md](README.md). This document contains detailed technical information.
+> Doc type: Explanation
 
-This demo application showcases a comprehensive GraphQL API implementation using Viaduct's custom directives and batch resolvers. The demo features Star Wars characters, films, planets, and other entities with full relationship mapping and optimized N+1 query prevention.
+For quick start instructions, see [README.md](README.md). This document contains detailed technical information.
 
 ## Viaduct Core Functionality
 
 ### Nodes: The Foundation of Entity Resolution
 
-Node resolvers are the backbone of GraphQL entity resolution in Viaduct. Every entity that you wish to fetch individually should be extend the global `node` interface using a GlobalID. This design pattern enables powerful batch resolution capabilities and provides a consistent interface for retrieving any entity by its identifier.
+Node resolvers are the backbone of GraphQL entity resolution in Viaduct. Every entity that you wish to fetch individually should extend the global `node` interface using a GlobalID. This design pattern enables powerful batch resolution capabilities and provides a consistent interface for retrieving any entity by its identifier.
 
 #### Global IDs: The Universal Key System
 
@@ -23,7 +23,7 @@ val globalId = GlobalID.fromTypeAndId("Character", "1")
 val encoded = globalId.toString() // "Q2hhcmFjdGVyOjE="
 ```
 
-**Key insight**: GlobalIDs are purely for retrieval via `node` queries - they should not exposed to users as readable identifiers. Unlike traditional database applications where you might expose primary keys directly in your UI, GlobalIDs are opaque identifiers used internally by GraphQL for efficient entity resolution.
+**Key insight**: GlobalIDs are purely for retrieval via `node` queries — they should not be exposed to users as readable identifiers. Unlike traditional database applications where you might expose primary keys directly in your UI, GlobalIDs are opaque identifiers used internally by GraphQL for efficient entity resolution.
 
 #### Node Resolver Implementation
 
@@ -87,7 +87,7 @@ For simple computed fields, use standard field resolvers:
 
 ```kotlin
 @Resolver("name homeworld { name }")
-class CharacterDisplayNameResolver : CharacterResolvers.DisplayName() {
+class DisplayNameResolver : CharacterResolvers.DisplayName() {
     override suspend fun resolve(ctx: Context): String {
         val character = ctx.objectValue
         val homeworld = character.getHomeworld()
@@ -103,7 +103,7 @@ Batch field resolvers process multiple field requests simultaneously, dramatical
 
 ```kotlin
 @Resolver(objectValueFragment = "fragment _ on Character { id }")
-class CharacterFilmCountBatchResolver : CharacterResolvers.FilmCount() {
+class FilmCountResolver : CharacterResolvers.FilmCount() {
     override suspend fun batchResolve(contexts: List<Context>): List<FieldValue<Int>> {
         // Extract all character IDs from the batch
         val characterIds = contexts.map { it.objectValue.getId().internalID }
@@ -140,11 +140,11 @@ class PlanetNodeResolver : NodeResolvers.Planet() { /* ... */ }
 
 // Batch field resolution for performance
 @Resolver(objectValueFragment = "fragment _ on Planet { id }")
-class PlanetResidentsBatchResolver : PlanetResolvers.Residents() { /* ... */ }
+class ResidentsResolver : PlanetResolvers.Residents() { /* ... */ }
 
 // Simple field resolution
 @Resolver("name climate")
-class PlanetDescriptionResolver : PlanetResolvers.Description() { /* ... */ }
+class DescriptionResolver : PlanetResolvers.Description() { /* ... */ }
 ```
 
 #### The Entity Resolution Flow
@@ -191,10 +191,10 @@ type Species @scope(to: ["default", "extras"]) {
 }
 ```
 
-> To query scoped fields, include the `X-Viaduct-Scope` header in your request:
+> To query scoped fields, include the `X-Viaduct-Scopes` header in your request:
 > ```
 > {
->     "X-Viaduct-Scope": "extras"
+>     "X-Viaduct-Scopes": "extras"
 > }
 > ```
 
@@ -450,7 +450,6 @@ mutation {
 **Note:** When using mutations, make sure to use properly encoded GlobalIDs.
 
 ## Data Model
-Mu
 The demo includes comprehensive Star Wars data:
 
 ### Characters
@@ -514,7 +513,7 @@ GraphQL lists are implemented using backing data classes:
 ```kotlin
 // Efficiently count films for multiple characters
 @Resolver(objectValueFragment = "fragment _ on Character { id }")
-class CharacterFilmCountResolver : CharacterResolvers.FilmCount() {
+class FilmCountResolver : CharacterResolvers.FilmCount() {
   override suspend fun batchResolve(contexts: List<Context>): List<FieldValue<Int>> {
     val counts = batchCountFilms(contexts.map { it.objectValue.getId().internalID })
     return contexts.map { FieldValue.ofValue(counts[it.objectValue.getId().internalID] ?: 0) }
@@ -526,7 +525,7 @@ class CharacterFilmCountResolver : CharacterResolvers.FilmCount() {
 ```kotlin
 // Combine data from multiple sources efficiently
 @Resolver(objectValueFragment = "fragment _ on Character { id name birthYear }")
-class CharacterRichSummaryResolver : CharacterResolvers.RichSummary() {
+class RichSummaryResolver : CharacterResolvers.RichSummary() {
   override suspend fun batchResolve(contexts: List<Context>): List<FieldValue<String>> {
     // Batch lookup homeworlds, species, film counts
     val summaries = createRichSummaries(contexts)

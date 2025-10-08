@@ -1,6 +1,0 @@
-extend type Query @scope(to: ["default"]) {
-  """
-  All starships
-  """
-  allStarships(limit: Int): [Starship] @resolver
-}

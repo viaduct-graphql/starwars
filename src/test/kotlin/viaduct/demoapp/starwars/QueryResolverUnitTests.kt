@@ -15,18 +15,21 @@ import viaduct.api.grts.Query_AllPlanets_Arguments
 import viaduct.api.grts.Query_AllSpecies_Arguments
 import viaduct.api.grts.Query_AllVehicles_Arguments
 import viaduct.api.grts.Query_SearchCharacter_Arguments
-import viaduct.demoapp.starwars.data.StarWarsData
-import viaduct.demoapp.starwars.resolvers.AllCharactersResolver
-import viaduct.demoapp.starwars.resolvers.AllFilmsResolver
-import viaduct.demoapp.starwars.resolvers.AllPlanetsResolver
-import viaduct.demoapp.starwars.resolvers.AllSpeciesResolver
-import viaduct.demoapp.starwars.resolvers.AllVehiclesResolver
-import viaduct.demoapp.starwars.resolvers.CharacterNodeResolver
-import viaduct.demoapp.starwars.resolvers.FilmNodeResolver
-import viaduct.demoapp.starwars.resolvers.PlanetNodeResolver
-import viaduct.demoapp.starwars.resolvers.SearchCharacterResolver
-import viaduct.demoapp.starwars.resolvers.SpeciesNodeResolver
-import viaduct.demoapp.starwars.resolvers.VehicleNodeResolver
+import viaduct.demoapp.characters.models.repository.CharacterRepository
+import viaduct.demoapp.characters.viaduct.queryresolvers.AllCharactersResolver
+import viaduct.demoapp.characters.viaduct.queryresolvers.CharacterNodeResolver
+import viaduct.demoapp.characters.viaduct.queryresolvers.SearchCharacterResolver
+import viaduct.demoapp.films.models.repository.FilmsRepository
+import viaduct.demoapp.films.viaduct.queryresolvers.AllFilmsResolver
+import viaduct.demoapp.films.viaduct.queryresolvers.FilmNodeResolver
+import viaduct.demoapp.universe.planets.viaduct.resolvers.AllPlanetsResolver
+import viaduct.demoapp.universe.planets.viaduct.resolvers.PlanetNodeResolver
+import viaduct.demoapp.universe.species.models.repository.SpeciesRepository
+import viaduct.demoapp.universe.species.viaduct.queryresolvers.AllSpeciesResolver
+import viaduct.demoapp.universe.species.viaduct.queryresolvers.SpeciesNodeResolver
+import viaduct.demoapp.universe.vehicles.models.repository.VehiclesRepository
+import viaduct.demoapp.universe.vehicles.viaduct.resolvers.AllVehiclesResolver
+import viaduct.demoapp.universe.vehicles.viaduct.resolvers.VehicleNodeResolver
 import viaduct.engine.api.ViaductSchema
 import viaduct.engine.runtime.execution.DefaultCoroutineInterop
 import viaduct.service.runtime.SchemaRegistryConfiguration
@@ -45,7 +48,7 @@ class QueryResolverUnitTests : DefaultAbstractResolverTestBase() {
     @Test
     fun `search character by name returns a matching character`(): Unit =
         runBlocking {
-            val reference = StarWarsData.characters.first()
+            val reference = CharacterRepository.findAll().first()
             val resolver = SearchCharacterResolver()
 
             val args = Query_SearchCharacter_Arguments.Builder(context)
@@ -70,7 +73,7 @@ class QueryResolverUnitTests : DefaultAbstractResolverTestBase() {
     @Test
     fun `search character by id returns exact character`(): Unit =
         runBlocking {
-            val reference = StarWarsData.characters.first()
+            val reference = CharacterRepository.findAll().first()
             val resolver = SearchCharacterResolver()
 
             val gid = context.globalIDFor(Character.Reflection, reference.id)
@@ -109,7 +112,7 @@ class QueryResolverUnitTests : DefaultAbstractResolverTestBase() {
 
             assertNotNull(result)
             assertEquals(limit, result!!.size)
-            val ref = StarWarsData.characters.first()
+            val ref = CharacterRepository.findAll().first()
             val first = result.first()!!
             assertEquals(ref.name, first.getName())
             assertEquals(ref.birthYear, first.getBirthYear())
@@ -132,7 +135,7 @@ class QueryResolverUnitTests : DefaultAbstractResolverTestBase() {
 
             assertNotNull(result)
             assertEquals(limit, result!!.size)
-            val ref = StarWarsData.films.first()
+            val ref = FilmsRepository.getAllFilms().first()
             val first = result.first()!!
             assertEquals(ref.title, first.getTitle())
             assertEquals(ref.episodeID, first.getEpisodeID())
@@ -155,9 +158,8 @@ class QueryResolverUnitTests : DefaultAbstractResolverTestBase() {
 
             assertNotNull(result)
             assertEquals(limit, result!!.size)
-            val ref = StarWarsData.planets.first()
             val first = result.first()!!
-            assertEquals(ref.name, first.getName())
+            assertEquals("Tatooine", first.getName())
         }
 
     @Test
@@ -177,7 +179,7 @@ class QueryResolverUnitTests : DefaultAbstractResolverTestBase() {
 
             assertNotNull(result)
             assertEquals(limit, result!!.size)
-            val ref = StarWarsData.species.first()
+            val ref = SpeciesRepository.findAll().first()
             val first = result.first()!!
             assertEquals(ref.name, first.getName())
         }
@@ -199,7 +201,7 @@ class QueryResolverUnitTests : DefaultAbstractResolverTestBase() {
 
             assertNotNull(result)
             assertEquals(limit, result!!.size)
-            val ref = StarWarsData.vehicles.first()
+            val ref = VehiclesRepository.findAll().first()
             val first = result.first()!!
             assertEquals(ref.name, first.getName())
             assertEquals(ref.model, first.getModel())
@@ -208,7 +210,7 @@ class QueryResolverUnitTests : DefaultAbstractResolverTestBase() {
     @Test
     fun `vehicle by id returns the correct Vehicle using node resolver`(): Unit =
         runBlocking {
-            val ref = StarWarsData.vehicles.first()
+            val ref = VehiclesRepository.findAll().first()
             val resolver = VehicleNodeResolver()
 
             // Create global ID for the vehicle
@@ -224,7 +226,7 @@ class QueryResolverUnitTests : DefaultAbstractResolverTestBase() {
     @Test
     fun `character by id returns the correct Character using node resolver`(): Unit =
         runBlocking {
-            val ref = StarWarsData.characters.first()
+            val ref = CharacterRepository.findAll().first()
             val resolver = CharacterNodeResolver()
 
             // Create global ID for the character
@@ -240,7 +242,7 @@ class QueryResolverUnitTests : DefaultAbstractResolverTestBase() {
     @Test
     fun `film by id returns the correct Film using node resolver`(): Unit =
         runBlocking {
-            val ref = StarWarsData.films.first()
+            val ref = FilmsRepository.getAllFilms().first()
             val resolver = FilmNodeResolver()
 
             // Create global ID for the film
@@ -256,23 +258,22 @@ class QueryResolverUnitTests : DefaultAbstractResolverTestBase() {
     @Test
     fun `planet by id returns the correct Planet using node resolver`(): Unit =
         runBlocking {
-            val ref = StarWarsData.planets.first()
             val resolver = PlanetNodeResolver()
 
             // Create global ID for the planet
-            val planetGlobalId = context.globalIDFor(viaduct.api.grts.Planet.Reflection, ref.id)
+            val planetGlobalId = context.globalIDFor(viaduct.api.grts.Planet.Reflection, "1")
 
             // Use runNodeResolver to fetch planet
             val result = runNodeResolver(resolver, planetGlobalId)
 
             assertNotNull(result)
-            assertEquals(ref.name, result.getName())
+            assertEquals("Tatooine", result.getName())
         }
 
     @Test
     fun `species by id returns the correct Species using node resolver`(): Unit =
         runBlocking {
-            val ref = StarWarsData.species.first()
+            val ref = SpeciesRepository.findAll().first()
             val resolver = SpeciesNodeResolver()
 
             // Create global ID for the species

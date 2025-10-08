@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import viaduct.api.grts.Query_AllStarships_Arguments
-import viaduct.demoapp.starwars.resolvers.AllStarshipsResolver
-import viaduct.demoapp.starwars.resolvers.StarshipNodeResolver
+import viaduct.demoapp.universe.starships.viaduct.resolvers.AllStarshipsResolver
+import viaduct.demoapp.universe.starships.viaduct.resolvers.StarshipNodeResolver
 import viaduct.engine.api.ViaductSchema
 import viaduct.engine.runtime.execution.DefaultCoroutineInterop
 import viaduct.service.runtime.SchemaRegistryConfiguration

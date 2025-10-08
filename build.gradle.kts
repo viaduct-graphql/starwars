@@ -26,8 +26,8 @@ dependencies {
     implementation(libs.spring.boot.starter.graphql)
     implementation(libs.spring.boot.starter.web)
 
-    runtimeOnly(project(":modules:starwars"))
-    runtimeOnly(project(":modules:starships"))
+    runtimeOnly(project(":modules:filmography"))
+    runtimeOnly(project(":modules:universe"))
 
     testImplementation(libs.spring.boot.starter.test) {
         exclude(module = "junit")
@@ -37,8 +37,8 @@ dependencies {
     testRuntimeOnly(libs.junit.platform.launcher)
 
     testImplementation(libs.io.mockk.jvm)
-    testImplementation(project(":modules:starwars"))
-    testImplementation(project(":modules:starships"))
+    testImplementation(project(":modules:filmography"))
+    testImplementation(project(":modules:universe"))
     testImplementation(libs.kotest.runner.junit)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.assertions.json)

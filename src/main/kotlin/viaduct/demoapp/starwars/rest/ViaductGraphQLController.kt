@@ -10,17 +10,18 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
-import viaduct.demoapp.starwars.Constants.DEFAULT_SCOPE
-import viaduct.demoapp.starwars.Constants.INTROSPECTION_QUERY
-import viaduct.demoapp.starwars.Constants.OPERATION_NAME_FIELD
-import viaduct.demoapp.starwars.Constants.QUERY_FIELD
-import viaduct.demoapp.starwars.Constants.SCOPES_HEADER
-import viaduct.demoapp.starwars.Constants.VARIABLES_FIELD
+import viaduct.demoapp.starwars.config.DEFAULT_SCOPE_ID
 import viaduct.demoapp.starwars.config.EXTRAS_SCOPE_ID
 import viaduct.demoapp.starwars.config.SCHEMA_ID
 import viaduct.demoapp.starwars.config.SCHEMA_ID_WITH_EXTRAS
 import viaduct.service.api.ExecutionInput
 import viaduct.service.api.Viaduct
+
+// HTTP header to retrieve query scopes to apply (e.g., "extras")
+const val SCOPES_HEADER = "X-Viaduct-Scopes"
+
+const val QUERY_FIELD = "query"
+const val VARIABLES_FIELD = "variables"
 
 @RestController
 class ViaductGraphQLController {
@@ -38,14 +39,7 @@ class ViaductGraphQLController {
 
         val result = viaduct.executeAsync(executionInput).await()
 
-        return when {
-            isIntrospectionQuery(request) -> {
-                ResponseEntity.ok(mapOf("data" to result.getData<Map<String, Any>>()))
-            }
-            else -> {
-                ResponseEntity.status(statusCode(result)).body(result.toSpecification())
-            }
-        }
+        return ResponseEntity.status(statusCode(result)).body(result.toSpecification())
     }
 
     private fun parseScopes(headers: HttpHeaders): Set<String> {
@@ -53,7 +47,7 @@ class ViaductGraphQLController {
         return if (scopesHeader != null) {
             scopesHeader.split(",").map { it.trim() }.toSet()
         } else {
-            setOf(DEFAULT_SCOPE)
+            setOf(DEFAULT_SCOPE_ID)
         }
     }
 
@@ -76,10 +70,6 @@ class ViaductGraphQLController {
             variables = (request[VARIABLES_FIELD] as? Map<String, Any>) ?: emptyMap(),
             requestContext = emptyMap<String, Any>(),
         )
-    }
-
-    private fun isIntrospectionQuery(request: Map<String, Any>): Boolean {
-        return request[OPERATION_NAME_FIELD] == INTROSPECTION_QUERY
     }
 
     private fun statusCode(result: ExecutionResult) =

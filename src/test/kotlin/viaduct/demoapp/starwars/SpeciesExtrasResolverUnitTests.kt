@@ -11,10 +11,10 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import viaduct.api.grts.Species
 import viaduct.demoapp.starwars.data.StarWarsData
-import viaduct.demoapp.starwars.resolvers.SpeciesCulturalNotesResolver
-import viaduct.demoapp.starwars.resolvers.SpeciesRarityLevelResolver
-import viaduct.demoapp.starwars.resolvers.SpeciesSpecialAbilitiesResolver
-import viaduct.demoapp.starwars.resolvers.SpeciesTechnologicalLevelResolver
+import viaduct.demoapp.universe.species.viaduct.fieldresolvers.CulturalNotesResolver
+import viaduct.demoapp.universe.species.viaduct.fieldresolvers.RarityLevelResolver
+import viaduct.demoapp.universe.species.viaduct.fieldresolvers.SpecialAbilitiesResolver
+import viaduct.demoapp.universe.species.viaduct.fieldresolvers.TechnologicalLevelResolver
 import viaduct.engine.api.ViaductSchema
 import viaduct.engine.runtime.execution.DefaultCoroutineInterop
 import viaduct.service.runtime.SchemaRegistryConfiguration
@@ -42,7 +42,7 @@ class SpeciesExtrasResolverUnitTests : DefaultAbstractResolverTestBase() {
     fun `SpeciesCulturalNotesResolver returns cultural notes from extrasData`(): Unit =
         runBlocking {
             val ref = StarWarsData.species.first()
-            val resolver = SpeciesCulturalNotesResolver()
+            val resolver = CulturalNotesResolver()
 
             val result = runFieldResolver(
                 resolver = resolver,
@@ -56,7 +56,7 @@ class SpeciesExtrasResolverUnitTests : DefaultAbstractResolverTestBase() {
     fun `SpeciesRarityLevelResolver returns rarity level from extrasData`(): Unit =
         runBlocking {
             val ref = StarWarsData.species.first()
-            val resolver = SpeciesRarityLevelResolver()
+            val resolver = RarityLevelResolver()
 
             val result = runFieldResolver(
                 resolver = resolver,
@@ -70,7 +70,7 @@ class SpeciesExtrasResolverUnitTests : DefaultAbstractResolverTestBase() {
     fun `SpeciesSpecialAbilitiesResolver returns abilities list from extrasData`(): Unit =
         runBlocking {
             val ref = StarWarsData.species.first()
-            val resolver = SpeciesSpecialAbilitiesResolver()
+            val resolver = SpecialAbilitiesResolver()
 
             val result = runFieldResolver(
                 resolver = resolver,
@@ -88,7 +88,7 @@ class SpeciesExtrasResolverUnitTests : DefaultAbstractResolverTestBase() {
     fun `SpeciesTechnologicalLevelResolver returns tech level from extrasData`(): Unit =
         runBlocking {
             val ref = StarWarsData.species.first()
-            val resolver = SpeciesTechnologicalLevelResolver()
+            val resolver = TechnologicalLevelResolver()
 
             val result = runFieldResolver(
                 resolver = resolver,
@@ -104,10 +104,10 @@ class SpeciesExtrasResolverUnitTests : DefaultAbstractResolverTestBase() {
             val fakeId = "non-existent-id-123"
             val grt = speciesGrtForId(fakeId)
 
-            val notes = runFieldResolver(SpeciesCulturalNotesResolver(), grt)
-            val rarity = runFieldResolver(SpeciesRarityLevelResolver(), grt)
-            val abilities = runFieldResolver(SpeciesSpecialAbilitiesResolver(), grt)
-            val tech = runFieldResolver(SpeciesTechnologicalLevelResolver(), grt)
+            val notes = runFieldResolver(CulturalNotesResolver(), grt)
+            val rarity = runFieldResolver(RarityLevelResolver(), grt)
+            val abilities = runFieldResolver(SpecialAbilitiesResolver(), grt)
+            val tech = runFieldResolver(TechnologicalLevelResolver(), grt)
 
             assertNull(notes)
             assertNull(rarity)

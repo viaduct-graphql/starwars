@@ -1,5 +1,11 @@
 val viaductVersion: String by settings
 
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+    }
+}
+
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
@@ -12,5 +18,5 @@ dependencyResolutionManagement {
     }
 }
 
-include(":modules:starwars")
-include(":modules:starships")
+include(":modules:filmography")
+include(":modules:universe")

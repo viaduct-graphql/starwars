@@ -1,0 +1,82 @@
+"""
+Species schema definitions
+"""
+type Species implements Node @scope(to: ["default", "extras"]) @resolver {
+  """
+  The ID of an object
+  """
+  id: ID!
+
+  """
+  The name of this species.
+  """
+  name: String
+
+  """
+  The classification of this species, such as "mammal" or "reptile".
+  """
+  classification: String
+
+  """
+  The designation of this species, such as "sentient".
+  """
+  designation: String
+
+  """
+  The average height of this species in centimeters.
+  """
+  averageHeight: Float
+
+  """
+  The average lifespan of this species in years.
+  """
+  averageLifespan: Int
+
+  """
+  The common eye colors for this species, empty if this species does not typically
+  have eyes.
+  """
+  eyeColors: [String]
+
+  """
+  The common hair colors for this species, empty if this species does not
+  typically have hair.
+  """
+  hairColors: [String]
+
+  """
+  The language commonly spoken by this species.
+  """
+  language: String
+
+  """
+  A planet that this species originates from.
+  """
+  homeworld: Planet @resolver
+
+  """
+  The ISO 8601 date format of the time that this resource was created.
+  """
+  created: String
+
+  """
+  The ISO 8601 date format of the time that this resource was edited.
+  """
+  edited: String
+}
+
+extend type Species @scope(to: ["extras"]) {
+  culturalNotes: String @resolver
+  rarityLevel: String @resolver
+  specialAbilities: [String] @resolver
+  technologicalLevel: String @resolver
+}
+
+extend type Query @scope(to: ["default"]) {
+  """
+  All species
+  """
+  allSpecies(limit: Int): [Species]
+    @resolver
+    @backingData(class: "viaduct.demoapp.universe.species.viaduct.queryresolvers.AllSpeciesResolver")
+}
