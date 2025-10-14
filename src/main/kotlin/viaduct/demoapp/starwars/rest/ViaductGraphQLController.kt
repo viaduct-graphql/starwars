@@ -10,19 +10,36 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
-import viaduct.demoapp.starwars.config.DEFAULT_SCOPE_ID
+import viaduct.demoapp.starwars.config.DEFAULT_SCHEMA_ID
+import viaduct.demoapp.starwars.config.DEFAULT_SCOPE
+import viaduct.demoapp.starwars.config.EXTRAS_SCHEMA_ID
 import viaduct.demoapp.starwars.config.EXTRAS_SCOPE_ID
-import viaduct.demoapp.starwars.config.SCHEMA_ID
-import viaduct.demoapp.starwars.config.SCHEMA_ID_WITH_EXTRAS
 import viaduct.service.api.ExecutionInput
+import viaduct.service.api.SchemaId
 import viaduct.service.api.Viaduct
 
-// HTTP header to retrieve query scopes to apply (e.g., "extras")
-const val SCOPES_HEADER = "X-Viaduct-Scopes"
+/**
+ * Query fields in the incoming GraphQL request. By default, GraphQL requests
+ * contain a "query" field and optionally a "variables" field.
+ */
+private const val QUERY_FIELD = "query"
+private const val VARIABLES_FIELD = "variables"
 
-const val QUERY_FIELD = "query"
-const val VARIABLES_FIELD = "variables"
+/**
+ * This demo includes a custom header to handle business rules.
+ * X-Viaduct-Scopes represents additional scopes to include in the query
+ * to filter which schemas to use in the Viaduct query to resolve the request.
+ *
+ * This is not part of the GraphQL spec, but is used here to demonstrate
+ * how Viaduct can handle multi-schema scenarios based on request context.
+ */
+private const val SCOPES_HEADER = "X-Viaduct-Scopes"
 
+/**
+ * This controller handles incoming GraphQL requests and routes them to the appropriate Viaduct schema
+ * based on the scopes provided in the request headers.
+ */
+// tag::viaduct_graphql_controller[18] Viaduct GraphQL Controller
 @RestController
 class ViaductGraphQLController {
     @Autowired
@@ -33,45 +50,59 @@ class ViaductGraphQLController {
         @RequestBody request: Map<String, Any>,
         @RequestHeader headers: HttpHeaders
     ): ResponseEntity<Map<String, Any>> {
+        val executionInput = createExecutionInput(request)
+        // tag::run_query[7] Runs the query example
         val scopes = parseScopes(headers)
         val schemaId = determineSchemaId(scopes)
-        val executionInput = createExecutionInput(request, schemaId)
-
-        val result = viaduct.executeAsync(executionInput).await()
-
+        val result = viaduct.executeAsync(executionInput, schemaId).await()
         return ResponseEntity.status(statusCode(result)).body(result.toSpecification())
     }
 
+    // tag::parse_scopes[8] Parse scopes example
+
+    /**
+     * Extract the scopes from the request headers. If no scopes are provided, default to [DEFAULT_SCOPE].
+     */
     private fun parseScopes(headers: HttpHeaders): Set<String> {
         val scopesHeader = headers.getFirst(SCOPES_HEADER)
-        return if (scopesHeader != null) {
-            scopesHeader.split(",").map { it.trim() }.toSet()
-        } else {
-            setOf(DEFAULT_SCOPE_ID)
-        }
+        return scopesHeader?.split(",")?.map { it.trim() }?.toSet() ?: setOf(DEFAULT_SCOPE)
     }
 
-    private fun determineSchemaId(scopes: Set<String>): String {
+    // tag::determine_schema[13] Determine schema example
+
+    /**
+     * Based on the scopes received in the request, determine which schema ID to use.
+     * If the "extras" scope is included, use the schema that includes extra fields.
+     */
+    private fun determineSchemaId(scopes: Set<String>): SchemaId {
         return if (scopes.contains(EXTRAS_SCOPE_ID)) {
-            SCHEMA_ID_WITH_EXTRAS
+            EXTRAS_SCHEMA_ID
         } else {
-            SCHEMA_ID
+            DEFAULT_SCHEMA_ID
         }
     }
 
-    private fun createExecutionInput(
-        request: Map<String, Any>,
-        schemaId: String
-    ): ExecutionInput {
+    // tag::execution_input[19] Create ExecutionInput example
+
+    /**
+     * Create an [ExecutionInput] object from the incoming request map and the determined schema ID.
+     *
+     * Viaduct ExecutionInput is similar to the standard GraphQL ExecutionInput,
+     * but includes the schema ID to specify which schema to use for execution.
+     */
+    private fun createExecutionInput(request: Map<String, Any>,): ExecutionInput {
         @Suppress("UNCHECKED_CAST")
         return ExecutionInput.create(
-            schemaId = schemaId,
             operationText = request[QUERY_FIELD] as String,
             variables = (request[VARIABLES_FIELD] as? Map<String, Any>) ?: emptyMap(),
             requestContext = emptyMap<String, Any>(),
         )
     }
 
+    /**
+     * GraphQL usually responds with status code 200, here
+     * an example of response post process handling, we are sending BAD_REQUEST status code.
+     */
     private fun statusCode(result: ExecutionResult) =
         when {
             result.isDataPresent && result.errors.isNotEmpty() -> HttpStatus.BAD_REQUEST
