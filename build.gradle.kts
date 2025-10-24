@@ -15,7 +15,7 @@ java {
 
 viaductApplication {
     grtPackageName.set("viaduct.api.grts")
-    modulePackagePrefix.set("viaduct.demoapp")
+    modulePackagePrefix.set("com.example.starwars")
 }
 
 dependencies {
@@ -25,9 +25,6 @@ dependencies {
     implementation(libs.reactor.core)
     implementation(libs.spring.boot.starter.graphql)
     implementation(libs.spring.boot.starter.web)
-
-    runtimeOnly(project(":modules:filmography"))
-    runtimeOnly(project(":modules:universe"))
 
     testImplementation(libs.spring.boot.starter.test) {
         exclude(module = "junit")
