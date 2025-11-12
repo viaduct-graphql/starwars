@@ -8,11 +8,9 @@ import io.micronaut.http.MediaType
 import io.micronaut.http.MutableHttpRequest
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.exceptions.HttpClientResponseException
-import viaduct.api.internal.ReflectionLoader
+import viaduct.api.mocks.testGlobalId as GlobalId
 import viaduct.api.reflect.Type
 import viaduct.api.types.NodeCompositeOutput
-import viaduct.tenant.runtime.globalid.GlobalIDCodecImpl
-import viaduct.tenant.runtime.globalid.GlobalIDImpl
 
 val objectMapper = ObjectMapper()
 
@@ -20,15 +18,7 @@ val objectMapper = ObjectMapper()
  * Generate a Global ID string for a given type and internal ID.
  */
 fun Type<NodeCompositeOutput>.globalId(internalId: String): String {
-    // Simple stub mirror for GlobalIDCodec (only used for serialization in tests)
-    val globalIDCodec = GlobalIDCodecImpl(object : ReflectionLoader {
-        override fun reflectionFor(name: String) = throw UnsupportedOperationException("Deserialization not needed in tests")
-
-        override fun getGRTKClassFor(name: String) = throw UnsupportedOperationException("Deserialization not needed in tests")
-    })
-
-    val globalId = GlobalIDImpl(this, internalId)
-    return globalIDCodec.serialize(globalId)
+    return GlobalId(internalId)
 }
 
 fun HttpClient.executeGraphQLQuery(
@@ -75,4 +65,33 @@ fun HttpClient.executeGraphQLQuery(
             )
         }
     }
+}
+
+/**
+ * Execute a GraphQL query with admin access header.
+ */
+fun HttpClient.executeGraphQLQueryWithAdminAccess(
+    query: String,
+    scopes: Set<String>? = null
+): JsonNode {
+    return executeGraphQLQuery(
+        query = query,
+        headers = mapOf("security-access" to "admin"),
+        scopes = scopes
+    )
+}
+
+/**
+ * Execute a GraphQL query with a custom security access header.
+ */
+fun HttpClient.executeGraphQLQueryWithCustomAccess(
+    query: String,
+    securityAccess: String,
+    scopes: Set<String>? = null
+): JsonNode {
+    return executeGraphQLQuery(
+        query = query,
+        headers = mapOf("security-access" to securityAccess),
+        scopes = scopes
+    )
 }

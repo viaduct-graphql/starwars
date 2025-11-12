@@ -39,7 +39,7 @@ dependencies {
     kapt(libs.micronaut.inject.kotlin)
 
     runtimeOnly(libs.logback.classic)
-
+    implementation(project(":common"))
     runtimeOnly(project(":modules:filmography"))
     runtimeOnly(project(":modules:universe"))
 
@@ -56,6 +56,7 @@ dependencies {
     testImplementation(libs.kotest.assertions.json)
     testImplementation(libs.viaduct.engine.wiring)
     testImplementation(libs.micronaut.http.client)
+    testImplementation(testFixtures(libs.viaduct.tenant.api))
 }
 
 application {
