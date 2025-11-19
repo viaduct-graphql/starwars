@@ -6,6 +6,7 @@ import io.micronaut.runtime.http.scope.RequestScope
  * Request-scoped context for managing security access control.
  * Each HTTP request gets its own instance to prevent data leakage between requests.
  */
+// # tag::request_context[30] Micronaut request context example
 @RequestScope
 open class SecurityAccessContext {
     private var securityAccess: String? = null

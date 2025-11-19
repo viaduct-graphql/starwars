@@ -14,7 +14,7 @@ import viaduct.api.grts.Character
  * The Mutation type demonstrates the @scope directive which restricts schema access
  * to specific tenants or contexts. All resolvers here are scoped to "starwars".
  */
-// tag::create_example[29] Example of a mutation resolver with scoped access
+// tag::create_example[50] Example of a mutation resolver with scoped access
 @Resolver
 class CreateCharacterMutation
     @Inject

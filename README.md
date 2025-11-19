@@ -193,4 +193,4 @@ Which returns:
 
 ## Technical deep dive
 
-For a deeper technical explanation of how the system works, see the [Getting Started Guide](https://airbnb.io/viaduct/docs/getting_started/).
+For a deeper technical explanation of how the system works, see the [Getting Started Guide](https://viaduct.airbnb.tech/docs/getting_started/).

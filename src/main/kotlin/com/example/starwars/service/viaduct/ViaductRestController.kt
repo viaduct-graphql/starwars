@@ -34,7 +34,7 @@ private const val SCOPES_HEADER = "X-Viaduct-Scopes"
  * This controller handles incoming GraphQL requests and routes them to the appropriate Viaduct schema
  * based on the scopes provided in the request headers.
  */
-// tag::viaduct_graphql_controller[18] Viaduct GraphQL Controller
+// tag::viaduct_graphql_controller[20] Viaduct GraphQL Controller
 @Controller
 class ViaductRestController(
     private val viaduct: Viaduct,
@@ -86,6 +86,8 @@ class ViaductRestController(
      * Viaduct ExecutionInput is similar to the standard GraphQL ExecutionInput,
      * but includes the schema ID to specify which schema to use for execution.
      */
+
+    // # tag::create_execution_input[7] How to create ExecutionInput
     private fun createExecutionInput(request: Map<String, Any>): ExecutionInput {
         @Suppress("UNCHECKED_CAST")
         return ExecutionInput.create(
