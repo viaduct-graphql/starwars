@@ -30,7 +30,9 @@ import viaduct.tenant.testing.DefaultAbstractResolverTestBase
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class StarshipResolversUnitTests : DefaultAbstractResolverTestBase() {
-    override fun getSchema(): ViaductSchema = SchemaFactory(DefaultCoroutineInterop).fromResources()
+    override fun getSchema(): ViaductSchema =
+        SchemaFactory(DefaultCoroutineInterop)
+            .fromResources("com.example.starwars", Regex(".*\\.graphqls"))
 
     private lateinit var starshipsRepository: StarshipsRepository
 
